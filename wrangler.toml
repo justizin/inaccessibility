@@ -1,6 +1,13 @@
 name = "inaccessibility"
 main = "src/worker.js"
 compatibility_date = "2026-06-01"
+workers_dev = false
+
+# Custom domain. The zone justiz.in must be on this Cloudflare account;
+# wrangler creates the DNS record and certificate on deploy.
+routes = [
+  { pattern = "inaccessible.justiz.in", custom_domain = true }
+]
 
 # Static UI. Existing asset paths are served directly; everything else
 # (the /api/* routes) falls through to the worker.

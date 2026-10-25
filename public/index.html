@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inaccessibility</title>
+  <meta name="description" content="Capture a screenshot and a voice or text note when you hit an accessibility failure.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#1b1f24">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon.svg">
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="top">
+    <p class="brand"><a href="/" aria-label="Inaccessibility, home">Inaccessibility</a></p>
+    <nav aria-label="Views">
+      <button type="button" id="nav-new" class="btn-link" aria-current="page">New note</button>
+      <button type="button" id="nav-saved" class="btn-link">Saved <span id="saved-count" class="count" aria-label="0 saved"></span></button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- Polite status for routine updates; assertive alert for errors. -->
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+    <p id="alert" class="alert" role="alert"></p>
+
+    <section id="view-login" hidden>
+      <h1>Sign in</h1>
+      <form id="login-form">
+        <label for="passphrase">Passphrase</label>
+        <input id="passphrase" name="passphrase" type="password" autocomplete="current-password" required>
+        <button type="submit" class="btn primary">Sign in</button>
+      </form>
+    </section>
+
+    <section id="view-capture" hidden>
+      <h1 id="capture-heading">New note</h1>
+      <form id="capture-form" novalidate>
+        <fieldset>
+          <legend>Screenshot</legend>
+          <div class="actions">
+            <label class="btn file-btn">
+              <input type="file" id="file-input" accept="image/*,audio/*" multiple>
+              Add screenshot or photo
+            </label>
+            <button type="button" id="capture-screen" class="btn" hidden>Capture my screen</button>
+          </div>
+          <p class="hint">You can also paste an image, or drop one anywhere on this page.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Voice note</legend>
+          <div class="actions">
+            <button type="button" id="record" class="btn" aria-pressed="false">Record voice note</button>
+            <span id="record-timer" class="timer" aria-hidden="true"></span>
+          </div>
+          <p id="record-unavailable" class="hint" hidden>Recording is not available in this browser.</p>
+          <div id="transcribe-wrap" class="check" hidden>
+            <input type="checkbox" id="transcribe" checked>
+            <label for="transcribe">Also turn speech into text (uses your browser's speech service)</label>
+          </div>
+          <label for="transcript">Transcript <span class="hint-inline">(edit if it got something wrong)</span></label>
+          <textarea id="transcript" name="transcript" rows="3"></textarea>
+        </fieldset>
+
+        <fieldset>
+          <legend>Text note</legend>
+          <label for="note">What went wrong?</label>
+          <textarea id="note" name="note" rows="4"></textarea>
+          <label for="url">Page or app <span class="hint-inline">(address or name)</span></label>
+          <input id="url" name="url" type="text" inputmode="url" autocomplete="off">
+        </fieldset>
+
+        <section aria-labelledby="attachments-heading">
+          <h2 id="attachments-heading" class="h-small">Attached <span id="attach-count"></span></h2>
+          <ul id="attachments" class="attachments"></ul>
+        </section>
+
+        <div class="actions">
+          <button type="submit" id="save" class="btn primary">Save note</button>
+          <button type="button" id="discard" class="btn" hidden>Close without saving new items</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="view-saved" hidden>
+      <h1>Saved notes</h1>
+      <p id="saved-empty" hidden>Nothing saved yet.</p>
+      <ul id="saved-list" class="saved"></ul>
+    </section>
+  </main>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

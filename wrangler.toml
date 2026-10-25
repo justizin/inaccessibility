@@ -1,0 +1,19 @@
+name = "inaccessibility"
+main = "src/worker.js"
+compatibility_date = "2026-06-01"
+
+# Static UI. Existing asset paths are served directly; everything else
+# (the /api/* routes) falls through to the worker.
+[assets]
+directory = "./public"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "inaccessibility"
+
+# Required before deploying: a passphrase for the UI/API.
+#   wrangler r2 bucket create inaccessibility
+#   wrangler secret put ACCESS_TOKEN
+# (Or put Cloudflare Access in front of the worker and leave ACCESS_TOKEN unset.)
+[observability]
+enabled = true

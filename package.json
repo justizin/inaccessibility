@@ -1,0 +1,26 @@
+{
+  "name": "inaccessibility",
+  "version": "0.1.0",
+  "description": "Capture screenshots and voice/text notes when you hit an accessibility failure. Runs on Node (Nomad, k8s) or Cloudflare Workers.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test \"test/**/*.test.js\"",
+    "cf:dev": "wrangler dev",
+    "cf:deploy": "wrangler deploy",
+    "cf:check": "wrangler deploy --dry-run --outdir .wrangler/dry-run"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.0",
+    "hono": "^4.10.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

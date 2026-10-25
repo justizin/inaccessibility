@@ -1,0 +1,27 @@
+{
+  "name": "Inaccessibility",
+  "short_name": "Inaccessible",
+  "description": "Capture a screenshot and a voice or text note when you hit an accessibility failure.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#111418",
+  "theme_color": "#1b1f24",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ],
+  "share_target": {
+    "action": "/api/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        { "name": "screenshots", "accept": ["image/*", "audio/*"] }
+      ]
+    }
+  }
+}

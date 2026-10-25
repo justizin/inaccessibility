@@ -1,0 +1,109 @@
+# Inaccessibility on Kubernetes: single replica, reports on a PersistentVolume.
+#
+#   kubectl create namespace inaccessibility
+#   kubectl -n inaccessibility create secret generic inaccessibility --from-literal=ACCESS_TOKEN=<passphrase>
+#   kubectl -n inaccessibility apply -f deploy/k8s/inaccessibility.yaml
+#
+# To use S3 instead of a volume (lets you scale past one replica), drop the
+# PVC and volume, and set STORAGE=s3, S3_ENDPOINT, S3_BUCKET plus
+# AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY in the secret.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: inaccessibility-data
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inaccessibility
+  labels:
+    app: inaccessibility
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: inaccessibility
+  template:
+    metadata:
+      labels:
+        app: inaccessibility
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: server
+          image: ghcr.io/justizin/inaccessibility:0.1.0
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: STORAGE
+              value: fs
+            - name: DATA_DIR
+              value: /data
+          envFrom:
+            - secretRef:
+                name: inaccessibility
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 50m
+              memory: 96Mi
+            limits:
+              memory: 256Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: inaccessibility-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inaccessibility
+spec:
+  selector:
+    app: inaccessibility
+  ports:
+    - port: 80
+      targetPort: http
+      name: http
+---
+# Optional. Uncomment and set the host for your ingress controller.
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: inaccessibility
+#   annotations:
+#     nginx.ingress.kubernetes.io/proxy-body-size: 64m
+# spec:
+#   rules:
+#     - host: inaccessibility.example.net
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: inaccessibility
+#                 port:
+#                   name: http
